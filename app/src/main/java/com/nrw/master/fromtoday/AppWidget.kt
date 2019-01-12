@@ -3,6 +3,7 @@ package com.nrw.master.fromtoday
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.view.View
 import android.widget.RemoteViews
 import org.joda.time.DateTime
 
@@ -35,17 +36,27 @@ class AppWidget : AppWidgetProvider() {
     }
 
     companion object {
-
-        var targetDate = DateTime.now().withDayOfMonth(1)
-        internal fun updateAppWidget(
-            context: Context, appWidgetManager: AppWidgetManager,
-            appWidgetId: Int
-        ) {
-
+        var targetDate = DateTime.now()
+        internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val widgetText = AppWidgetConfigureActivity.loadTitlePref(context, appWidgetId)
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.app_widget)
             views.setTextViewText(R.id.appwidget_text, widgetText)
+            views.setTextViewText(R.id.top_value, targetDate.dayOfWeek.toString())
+            val res = context.resources
+            for (i in 0..5) {
+                val id = res.getIdentifier("week_num_$i", "id", context.packageName)
+                views.apply {
+                    setTextViewText(id, "${DateTime.now().weekOfWeekyear + i}")
+                    setViewVisibility(id, View.VISIBLE)
+                }
+            }
+            for (i in 0..41) {
+                val id = res.getIdentifier("day_$i", "id", context.packageName)
+                views.apply {
+                   setTextViewText()
+                }
+            }
 
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)

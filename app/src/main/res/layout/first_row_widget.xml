@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:paddingBottom="@dimen/small_margin"
-    android:paddingTop="@dimen/small_margin">
+    android:paddingTop="@dimen/small_margin"
+    android:weightSum="36">
+
 
     <TextView
         android:id="@+id/week_num"
@@ -20,55 +22,55 @@
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="M"/>
+        android:layout_weight="5"
+        android:text="S"/>
 
     <TextView
         android:id="@+id/label_1"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="T"/>
+        android:layout_weight="5"
+        android:text="M"/>
 
     <TextView
         android:id="@+id/label_2"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="W"/>
+        android:layout_weight="5"
+        android:text="T"/>
 
     <TextView
         android:id="@+id/label_3"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="T"/>
+        android:layout_weight="5"
+        android:text="W"/>
 
     <TextView
         android:id="@+id/label_4"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="F"/>
+        android:layout_weight="5"
+        android:text="T"/>
 
     <TextView
         android:id="@+id/label_5"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="S"/>
+        android:layout_weight="5"
+        android:text="F"/>
 
     <TextView
         android:id="@+id/label_6"
         style="@style/MetaView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="5"
         android:text="S"/>
 
 </LinearLayout>
