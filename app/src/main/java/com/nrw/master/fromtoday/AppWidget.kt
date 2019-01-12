@@ -36,13 +36,14 @@ class AppWidget : AppWidgetProvider() {
     }
 
     companion object {
-        var targetDate = DateTime.now()
+        val targetDate = DateTime.now()
+        val targetDayOfWeek = targetDate.getDayOfWeek() % 7/* mon = 1, sun = 7 */
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val widgetText = AppWidgetConfigureActivity.loadTitlePref(context, appWidgetId)
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.app_widget)
             views.setTextViewText(R.id.appwidget_text, widgetText)
-            views.setTextViewText(R.id.top_value, targetDate.dayOfWeek.toString())
+            views.setTextViewText(R.id.top_value, "$targetDayOfWeek")
             val res = context.resources
             for (i in 0..5) {
                 val id = res.getIdentifier("week_num_$i", "id", context.packageName)
@@ -53,14 +54,28 @@ class AppWidget : AppWidgetProvider() {
             }
             for (i in 0..41) {
                 val id = res.getIdentifier("day_$i", "id", context.packageName)
-                views.apply {
-                   setTextViewText()
+                if (i < targetDayOfWeek) {
+                    val day = targetDate.minusDays(targetDayOfWeek - i)
+                    addDayNumber(context, views, day, id)
+                }
+                if (i > targetDayOfWeek) {
+                    val day = targetDate.plusDays(targetDayOfWeek + i)
+                    addDayNumber(context, views, day, id)
+                }
+                else {
+                    addDayNumber(context, views, targetDate, id)
                 }
             }
 
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
+        private fun addDayNumber(context: Context, views: RemoteViews, day: DateTime, id: Int) {
+            val newViews = RemoteViews(context.packageName, R.layout.day_monthly_number_view)
+            newViews.setTextViewText(R.id.day_monthly_number_id, "${day.getMonthOfYear()}/${day.getDayOfMonth()}")
+            views.addView(id, newViews)
+        }
+
     }
 }
 
