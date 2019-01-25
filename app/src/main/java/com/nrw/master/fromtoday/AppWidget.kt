@@ -1,8 +1,12 @@
 package com.nrw.master.fromtoday
 
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.content.Intent
+import android.provider.CalendarContract
 import android.view.View
 import android.widget.RemoteViews
 import org.joda.time.DateTime
@@ -43,7 +47,7 @@ class AppWidget : AppWidgetProvider() {
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.app_widget)
             views.setTextViewText(R.id.appwidget_text, widgetText)
-            views.setTextViewText(R.id.top_value, "$targetDayOfWeek")
+            views.setTextViewText(R.id.top_value, "$targetDate.dayOfMonth")
             val res = context.resources
             for (i in 0..5) {
                 val id = res.getIdentifier("week_num_$i", "id", context.packageName)
@@ -52,19 +56,13 @@ class AppWidget : AppWidgetProvider() {
                     setViewVisibility(id, View.VISIBLE)
                 }
             }
+
             for (i in 0..41) {
                 val id = res.getIdentifier("day_$i", "id", context.packageName)
-                if (i < targetDayOfWeek) {
-                    val day = targetDate.minusDays(targetDayOfWeek - i)
-                    addDayNumber(context, views, day, id)
-                }
-                if (i > targetDayOfWeek) {
-                    val day = targetDate.plusDays(targetDayOfWeek + i)
-                    addDayNumber(context, views, day, id)
-                }
-                else {
-                    addDayNumber(context, views, targetDate, id)
-                }
+                val day = if (i < targetDayOfWeek) targetDate.minusDays(targetDayOfWeek - i) else if (i > targetDayOfWeek) targetDate.plusDays(i - targetDayOfWeek) else targetDate
+
+                addDayNumber(context, views, day, id)
+                //addEventIntent(context, views, day, id)
             }
 
             // Instruct the widget manager to update the widget
@@ -73,9 +71,27 @@ class AppWidget : AppWidgetProvider() {
         private fun addDayNumber(context: Context, views: RemoteViews, day: DateTime, id: Int) {
             val newViews = RemoteViews(context.packageName, R.layout.day_monthly_number_view)
             newViews.setTextViewText(R.id.day_monthly_number_id, "${day.getMonthOfYear()}/${day.getDayOfMonth()}")
+            Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
+                setData(CalendarContract.Events.CONTENT_URI)
+                putExtra(CalendarContract.Events.TITLE, "${day.millis}")
+                putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, day.millis)
+                val pi = PendingIntent.getActivity(context, 0, this, PendingIntent.FLAG_ONE_SHOT)
+                newViews.setOnClickPendingIntent(R.id.day_monthly_number_id, pi)
+            }
+            views.removeAllViews(id)
             views.addView(id, newViews)
-        }
 
+        }
+/*
+        private fun addEventIntent(context: Context, views: RemoteViews, day: DateTime, id: Int) {
+            Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
+                setData(CalendarContract.Events.CONTENT_URI)
+                putExtra(CalendarContract.Events.TITLE, "${day.millis}")
+                putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, day.millis)
+                views.setOnClickFillInIntent(id, this)
+            }
+        }
+*/
     }
 }
 
